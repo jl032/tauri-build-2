@@ -5,12 +5,16 @@ pub fn run() {
         .setup(|app| {
             let window = tauri::Manager::get_webview_window(app, "main").unwrap();
             window.eval("
-                document.addEventListener('click', (e) => {
-                    const a = e.target.closest('a');
-                    if (a && a.href && !a.href.startsWith(location.origin)) {
-                        e.preventDefault();
-                        window.__TAURI__.shell.open(a.href);
-                    }
+                window.addEventListener('load', () => {
+                    document.addEventListener('click', (e) => {
+                        const a = e.target.closest('a');
+                        if (a && a.href && !a.href.startsWith(location.origin)) {
+                            e.preventDefault();
+                            if (window.__TAURI__ && window.__TAURI__.shell) {
+                                window.__TAURI__.shell.open(a.href);
+                            }
+                        }
+                    });
                 });
             ").unwrap();
             Ok(())
