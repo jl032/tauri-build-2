@@ -1,22 +1,27 @@
+use tauri::Manager;
+use tauri::webview::PageLoadEvent;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .setup(|app| {
-            let window = tauri::Manager::get_webview_window(app, "main").unwrap();
-            window.eval("
-                window.addEventListener('load', () => {
-                    document.addEventListener('click', (e) => {
-                        const a = e.target.closest('a');
-                        if (a && a.href && !a.href.startsWith(location.origin)) {
-                            e.preventDefault();
-                            if (window.__TAURI__ && window.__TAURI__.shell) {
-                                window.__TAURI__.shell.open(a.href);
+            let window = app.get_webview_window("main").unwrap();
+            window.on_page_load(|window, payload| {
+                if payload.event() == PageLoadEvent::Finished {
+                    window.eval("
+                        document.addEventListener('click', (e) => {
+                            const a = e.target.closest('a');
+                            if (a && a.href && !a.href.startsWith(location.origin)) {
+                                e.preventDefault();
+                                if (window.__TAURI__ && window.__TAURI__.shell) {
+                                    window.__TAURI__.shell.open(a.href);
+                                }
                             }
-                        }
-                    });
-                });
-            ").unwrap();
+                        });
+                    ").unwrap();
+                }
+            });
             Ok(())
         })
         .run(tauri::generate_context!())
