@@ -1,19 +1,19 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Crimsyn",
+  "productName": "Feeder",
   "version": "0.1.0",
-  "identifier": "com.jonat.crimsyn",
+  "identifier": "com.jonat.feeder",
   "build": {
-    "devUrl": "https://youtube.com",
+    "devUrl": "https://feeder.co/reader",
     "beforeBuildCommand": "",
-    "frontendDist": "https://youtube.com"
+    "frontendDist": "https://feeder.co/reader"
   },
   "app": {
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "Crimsyn",
-        "url": "https://youtube.com/",
+        "title": "Feeder",
+        "url": "https://feeder.co/reader/",
         "width": 1200,
         "height": 800
       }
