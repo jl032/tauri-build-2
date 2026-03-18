@@ -1,5 +1,4 @@
-use tauri::Manager;
-use tauri_plugin_shell::ShellExt;
+use tauri_plugin_opener::OpenerExt;
 
 const NAV_SCRIPT: &str = r#"
     (function() {
@@ -36,10 +35,10 @@ const NAV_SCRIPT: &str = r#"
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             let handle = app.handle().clone();
-            let window = tauri::WebviewWindowBuilder::new(
+            tauri::WebviewWindowBuilder::new(
                 app,
                 "main",
                 tauri::WebviewUrl::External("https://z-library.sk/".parse().unwrap())
@@ -47,9 +46,7 @@ pub fn run() {
             .title("Zlib")
             .inner_size(1280.0, 800.0)
             .initialization_script(NAV_SCRIPT)
-            .build()?;
-
-            window.on_navigation(move |url| {
+            .on_navigation(move |url| {
                 let url_str = url.to_string();
                 if url_str.contains("z-library.sk") {
                     true
@@ -57,12 +54,12 @@ pub fn run() {
                     let handle = handle.clone();
                     let url_str = url_str.clone();
                     tauri::async_runtime::spawn(async move {
-                        let _ = handle.shell().open(&url_str, None);
+                        let _ = handle.opener().open_url(&url_str, None::<&str>);
                     });
                     false
                 }
-            });
-
+            })
+            .build()?;
             Ok(())
         })
         .run(tauri::generate_context!())
