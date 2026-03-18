@@ -10,14 +10,7 @@
   },
   "app": {
     "withGlobalTauri": true,
-    "windows": [
-      {
-        "title": "Zlib",
-        "url": "https://z-library.sk/",
-        "width": 1200,
-        "height": 800 
-      }
-    ],
+    "windows": [],
     "security": {
       "csp": null
     }
