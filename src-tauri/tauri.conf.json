@@ -1,19 +1,19 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Feeder",
+  "productName": "Zlib",
   "version": "0.1.0",
-  "identifier": "com.jonat.feeder",
+  "identifier": "com.jonat.zlib",
   "build": {
-    "devUrl": "https://feeder.co/reader",
+    "devUrl": "https://z-library.sk/",
     "beforeBuildCommand": "",
-    "frontendDist": "https://feeder.co/reader"
+    "frontendDist": "https://z-library.sk/"
   },
   "app": {
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "Feeder",
-        "url": "https://feeder.co/reader/",
+        "title": "Zlib",
+        "url": "https://z-library.sk/",
         "width": 1200,
         "height": 800
       }
@@ -32,5 +32,10 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    }
   }
 }
