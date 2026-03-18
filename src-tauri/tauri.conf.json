@@ -27,7 +27,7 @@
     ]
   },
   "plugins": {
-    "shell": {
+    "opener": {
       "open": true
     }
   }
