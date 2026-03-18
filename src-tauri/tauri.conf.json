@@ -4,9 +4,8 @@
   "version": "0.1.0",
   "identifier": "com.jonat.crimsyn",
   "build": {
-    "beforeDevCommand": "pnpm dev",
     "devUrl": "https://youtube.com",
-    "beforeBuildCommand": "pnpm build",
+    "beforeBuildCommand": "",
     "frontendDist": "https://youtube.com"
   },
   "app": {
