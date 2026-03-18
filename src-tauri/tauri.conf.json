@@ -24,7 +24,6 @@
     }
   },
   "bundle": {
-    "name": "Crimysn",
     "active": true,
     "targets": "all",
     "icon": [
