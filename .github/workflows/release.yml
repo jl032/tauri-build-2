@@ -44,18 +44,17 @@ jobs:
 
       - name: Fetch Vikunja Logo
         run: |
-          # -f makes curl fail if the URL is 404, -L follows redirects
-          curl -fL https://raw.githubusercontent.com/go-vikunja/vikunja/main/public/images/logo.svg -o vikunja-logo.svg || \
-          curl -fL https://gist.githubusercontent.com/pReya/9ef81bad11f562f9e3b40d2f42ba138c/raw/vikunja.svg -o vikunja-logo.svg
+          curl -fL https://raw.githubusercontent.com/go-vikunja/vikunja/main/public/images/logo.svg -o vikunja-logo.svg
 
-      - name: Verify Logo Content
+      - name: Square the SVG
         run: |
-          # Check if the file starts with <svg (if it starts with '404' or '{' it will fail here)
-          head -c 10 vikunja-logo.svg | grep "<svg" || (echo "Downloaded file is not a valid SVG" && exit 1)
-      
+          # This replaces the rectangular viewBox (0 0 258 253) with a square one (0 0 258 258)
+          # It also adds a small translation so the logo stays centered
+          sed -i 's/viewBox="0 0 258 253"/viewBox="0 0 258 258"/' vikunja-logo.svg
+          sed -i 's/<g /<g transform="translate(0, 2.5)" /' vikunja-logo.svg
+
       - name: Generate Tauri Icons
         run: |
-          # Now it is safe to run
           tauri icon ./vikunja-logo.svg
 
       - name: Build and release
