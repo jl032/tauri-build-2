@@ -38,33 +38,43 @@ jobs:
         with:
           node-version: 20
 
-      # Install the CLI globally so we don't need a package.json
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Cache Rust
+        uses: swatinem/rust-cache@v2
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev
+
       - name: Install Tauri CLI Globally
         run: pnpm add -g @tauri-apps/cli
 
       - name: Fetch and Square Vikunja Logo
         run: |
-          # 1. Download the SVG
           curl -fL https://gist.githubusercontent.com/pReya/9ef81bad11f562f9e3b40d2f42ba138c/raw/vikunja.svg -o vikunja-logo.svg
-          
-          # 2. Square the ViewBox (258x258)
-          # We use a temp file to avoid the 'sed -i' cross-platform syntax bug
           sed 's@viewBox="0 0 258 253"@viewBox="0 0 258 258"@g' vikunja-logo.svg > temp.svg && mv temp.svg vikunja-logo.svg
-          
-          # 3. Center vertically
           sed 's@<g @<g transform="translate(0, 2.5)" @g' vikunja-logo.svg > temp.svg && mv temp.svg vikunja-logo.svg
 
       - name: Generate Tauri Icons
-        run: |
-          # Ensure we are calling the global tauri we installed earlier
-          tauri icon ./vikunja-logo.svg
+        run: tauri icon ./vikunja-logo.svg
 
       - name: Build and release
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # This tells the action to use the global CLI we just installed
           tauriScript: tauri
           tagName: app-v__VERSION__
           releaseName: 'App v__VERSION__'
