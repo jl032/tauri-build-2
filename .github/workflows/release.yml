@@ -28,6 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 1. Install pnpm (required for dependencies and CLI)
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -38,6 +39,7 @@ jobs:
         with:
           node-version: 20
 
+      # 2. Install Rust with BOTH Mac targets (Intel + Apple Silicon)
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -46,6 +48,7 @@ jobs:
       - name: Cache Rust
         uses: swatinem/rust-cache@v2
 
+      # 3. Handle Linux-specific system dependencies
       - name: Install Linux dependencies
         if: matrix.platform == 'ubuntu-22.04'
         run: |
@@ -58,18 +61,23 @@ jobs:
             libayatana-appindicator3-dev \
             librsvg2-dev
 
+      # 4. Install Tauri CLI globally to avoid "No package.json" errors
       - name: Install Tauri CLI Globally
         run: pnpm add -g @tauri-apps/cli
 
+      # 5. Download, Square, and Center the Logo (Forcing Bash for Windows compatibility)
       - name: Fetch and Square Vikunja Logo
+        shell: bash
         run: |
           curl -fL https://gist.githubusercontent.com/pReya/9ef81bad11f562f9e3b40d2f42ba138c/raw/vikunja.svg -o vikunja-logo.svg
           sed 's@viewBox="0 0 258 253"@viewBox="0 0 258 258"@g' vikunja-logo.svg > temp.svg && mv temp.svg vikunja-logo.svg
           sed 's@<g @<g transform="translate(0, 2.5)" @g' vikunja-logo.svg > temp.svg && mv temp.svg vikunja-logo.svg
 
+      # 6. Generate all required OS icons
       - name: Generate Tauri Icons
         run: tauri icon ./vikunja-logo.svg
 
+      # 7. Final Build and Release
       - name: Build and release
         uses: tauri-apps/tauri-action@v0
         env:
