@@ -43,11 +43,20 @@ jobs:
         run: pnpm add -g @tauri-apps/cli
 
       - name: Fetch Vikunja Logo
-        run: curl -L https://raw.githubusercontent.com/go-vikunja/vikunja/main/public/images/logo.svg -o vikunja-logo.svg
+        run: |
+          # -f makes curl fail if the URL is 404, -L follows redirects
+          curl -fL https://raw.githubusercontent.com/go-vikunja/vikunja/main/public/images/logo.svg -o vikunja-logo.svg || \
+          curl -fL https://gist.githubusercontent.com/pReya/9ef81bad11f562f9e3b40d2f42ba138c/raw/vikunja.svg -o vikunja-logo.svg
+
+      - name: Verify Logo Content
+        run: |
+          # Check if the file starts with <svg (if it starts with '404' or '{' it will fail here)
+          head -c 10 vikunja-logo.svg | grep "<svg" || (echo "Downloaded file is not a valid SVG" && exit 1)
       
-      # Use the global command
       - name: Generate Tauri Icons
-        run: tauri icon ./vikunja-logo.svg
+        run: |
+          # Now it is safe to run
+          tauri icon ./vikunja-logo.svg
 
       - name: Build and release
         uses: tauri-apps/tauri-action@v0
