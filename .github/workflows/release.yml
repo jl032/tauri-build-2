@@ -28,10 +28,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 1. Install pnpm binary first
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'pnpm' # Now this will work because pnpm exists
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -53,10 +60,15 @@ jobs:
             libayatana-appindicator3-dev \
             librsvg2-dev
 
+      # 2. Install dependencies so 'pnpm tauri' is available
+      - name: Install frontend dependencies
+        run: pnpm install
+
       - name: Fetch Vikunja Logo
         run: |
           curl -L https://raw.githubusercontent.com/go-vikunja/vikunja/main/public/images/logo.svg -o vikunja-logo.svg
       
+      # 3. Use 'pnpm exec' to ensure it finds the local tauri binary
       - name: Generate Tauri Icons
         run: |
           pnpm tauri icon ./vikunja-logo.svg
