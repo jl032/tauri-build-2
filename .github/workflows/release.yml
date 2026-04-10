@@ -42,19 +42,21 @@ jobs:
       - name: Install Tauri CLI Globally
         run: pnpm add -g @tauri-apps/cli
 
-      - name: Fetch Vikunja Logo
+      - name: Fetch and Square Vikunja Logo
         run: |
-          curl -fL https://raw.githubusercontent.com/go-vikunja/vikunja/main/public/images/logo.svg -o vikunja-logo.svg
-
-      - name: Square the SVG
-        run: |
-          # This replaces the rectangular viewBox (0 0 258 253) with a square one (0 0 258 258)
-          # It also adds a small translation so the logo stays centered
-          sed -i 's/viewBox="0 0 258 253"/viewBox="0 0 258 258"/' vikunja-logo.svg
-          sed -i 's/<g /<g transform="translate(0, 2.5)" /' vikunja-logo.svg
+          # 1. Download from a stable Gist mirror
+          curl -fL https://gist.githubusercontent.com/pReya/9ef81bad11f562f9e3b40d2f42ba138c/raw/vikunja.svg -o vikunja-logo.svg
+          
+          # 2. Force it to be square (258x258)
+          # We use @ as a delimiter in sed to avoid clashing with slashes in SVG tags
+          sed -i 's@viewBox="0 0 258 253"@viewBox="0 0 258 258"@g' vikunja-logo.svg
+          
+          # 3. Center the logo vertically in the new square space
+          sed -i 's@<g @<g transform="translate(0, 2.5)" @g' vikunja-logo.svg
 
       - name: Generate Tauri Icons
         run: |
+          # This uses the global tauri CLI we installed in the previous step
           tauri icon ./vikunja-logo.svg
 
       - name: Build and release
