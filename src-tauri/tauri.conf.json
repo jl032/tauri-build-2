@@ -16,6 +16,7 @@
         "width": 1280,
         "height": 800,
         "url": "http://localhost:3456"
+      }
     ],
     "security": {
       "csp": null
