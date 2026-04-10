@@ -44,19 +44,19 @@ jobs:
 
       - name: Fetch and Square Vikunja Logo
         run: |
-          # 1. Download from a stable Gist mirror
+          # 1. Download the SVG
           curl -fL https://gist.githubusercontent.com/pReya/9ef81bad11f562f9e3b40d2f42ba138c/raw/vikunja.svg -o vikunja-logo.svg
           
-          # 2. Force it to be square (258x258)
-          # We use @ as a delimiter in sed to avoid clashing with slashes in SVG tags
-          sed -i 's@viewBox="0 0 258 253"@viewBox="0 0 258 258"@g' vikunja-logo.svg
+          # 2. Square the ViewBox (258x258)
+          # We use a temp file to avoid the 'sed -i' cross-platform syntax bug
+          sed 's@viewBox="0 0 258 253"@viewBox="0 0 258 258"@g' vikunja-logo.svg > temp.svg && mv temp.svg vikunja-logo.svg
           
-          # 3. Center the logo vertically in the new square space
-          sed -i 's@<g @<g transform="translate(0, 2.5)" @g' vikunja-logo.svg
+          # 3. Center vertically
+          sed 's@<g @<g transform="translate(0, 2.5)" @g' vikunja-logo.svg > temp.svg && mv temp.svg vikunja-logo.svg
 
       - name: Generate Tauri Icons
         run: |
-          # This uses the global tauri CLI we installed in the previous step
+          # Ensure we are calling the global tauri we installed earlier
           tauri icon ./vikunja-logo.svg
 
       - name: Build and release
