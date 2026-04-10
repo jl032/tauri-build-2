@@ -38,7 +38,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm' # Now this will work because pnpm exists
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
